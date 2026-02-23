@@ -1,6 +1,6 @@
 # TetrisBench
 
-A Human vs AI Tetris benchmark where LLMs compete by writing scoring functions — not by picking moves directly. Based on the [a16z article](https://a16z.com/tetrisbench/) by Yoko Li.
+A Human vs AI Tetris benchmark where LLMs compete by writing scoring functions — not by picking moves directly. Based on the [a16z article](https://www.a16z.news/p/i-built-tetrisbench-where-llms-compete) by [Yoko Li](https://x.com/stuffyokodraws/status/2014025296807338412).
 
 ```
   +------------------------------------------------------------+
