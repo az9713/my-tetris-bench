@@ -2,18 +2,7 @@
 
 A Human vs AI Tetris benchmark where LLMs compete by writing scoring functions — not by picking moves directly. Based on the [a16z article](https://www.a16z.news/p/i-built-tetrisbench-where-llms-compete) by [Yoko Li](https://x.com/stuffyokodraws/status/2014025296807338412).
 
-```
-  +------------------------------------------------------------+
-  |  HUMAN vs AI TETRIS                          TIME: 01:42   |
-  |                                                             |
-  |   PLAYER        |  VS  |        GEMINI 3 FLASH             |
-  |   Score: 1200   |      |        Score: 3600                |
-  |   Lines: 8      |      |        Lines: 21                  |
-  |                  |      |                                   |
-  |   [Tetris Board] |      | [Tetris Board]                   |
-  |                  |      |                                   |
-  +------------------------------------------------------------+
-```
+<video src="docs/tetrisbench_demo.mp4" controls width="100%"></video>
 
 ## What Makes This Different
 
