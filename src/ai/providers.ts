@@ -32,7 +32,7 @@ export const AVAILABLE_MODELS: ModelConfig[] = [
     id: 'gemini-3-flash',
     displayName: 'Gemini 3 Flash',
     provider: 'google',
-    modelId: 'gemini-2.0-flash',
+    modelId: 'gemini-3-flash-preview',
     icon: '⚡',
   },
   {
