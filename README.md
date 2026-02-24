@@ -2,7 +2,7 @@
 
 A Human vs AI Tetris benchmark where LLMs compete by writing scoring functions — not by picking moves directly. Based on the [a16z article](https://www.a16z.news/p/i-built-tetrisbench-where-llms-compete) by [Yoko Li](https://x.com/stuffyokodraws/status/2014025296807338412).
 
-<video src="https://raw.githubusercontent.com/az9713/my-tetris-bench/main/docs/human_vs_gemini_3_flash_compressed.mp4" autoplay loop muted playsinline width="100%"></video>
+https://github.com/user-attachments/assets/2a8f83d1-0e6e-4622-a73c-58585928135b
 
 ## What Makes This Different
 
