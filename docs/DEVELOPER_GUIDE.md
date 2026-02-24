@@ -20,7 +20,8 @@ A step-by-step, hand-holding guide for developers who are new to web development
 12. [Testing](#12-testing)
 13. [Common Development Tasks](#13-common-development-tasks)
 14. [Troubleshooting](#14-troubleshooting)
-15. [Glossary](#15-glossary)
+15. [Vercel AI SDK and API Billing](#15-vercel-ai-sdk-and-api-billing)
+16. [Glossary](#16-glossary)
 
 ---
 
@@ -872,7 +873,98 @@ This means `Foo` doesn't exist in `types.ts`. Check the spelling and make sure i
 
 ---
 
-## 15. Glossary
+## 15. Vercel AI SDK and API Billing
+
+### What is the Vercel AI SDK?
+
+TetrisBench uses the **Vercel AI SDK** (`ai` npm package) to call LLM providers. This is a **client library** that runs inside your Next.js server -- it is NOT a cloud service. It does not route traffic through Vercel's infrastructure.
+
+The SDK provides a unified `generateText()` function that works identically across all providers:
+
+```typescript
+// src/app/api/ai/generate-scoring/route.ts
+import { generateText } from 'ai';
+import { anthropic } from '@ai-sdk/anthropic';
+import { openai } from '@ai-sdk/openai';
+import { google } from '@ai-sdk/google';
+import { xai } from '@ai-sdk/xai';
+```
+
+Each provider has its own SDK adapter (`@ai-sdk/anthropic`, `@ai-sdk/openai`, `@ai-sdk/google`, `@ai-sdk/xai`). These adapters translate the unified `generateText()` call into the provider-specific HTTP request format. This is why you don't see separate API implementations for each provider -- the Vercel AI SDK abstracts the differences.
+
+### Why don't I see different implementations for each provider?
+
+Google, OpenAI, and Anthropic all have different REST APIs (different endpoints, request formats, auth headers, response structures). The Vercel AI SDK handles all of this internally. In the codebase, the only provider-specific code is a single switch statement:
+
+```typescript
+// src/app/api/ai/generate-scoring/route.ts
+function getProvider(provider: string, modelId: string) {
+  switch (provider) {
+    case 'anthropic': return anthropic(modelId);
+    case 'openai':    return openai(modelId);
+    case 'google':    return google(modelId);
+    case 'xai':       return xai(modelId);
+    default: throw new Error(`Unknown provider: ${provider}`);
+  }
+}
+```
+
+After that, the same `generateText()` call works for any provider:
+
+```typescript
+const { text } = await generateText({
+  model: providerModel,      // could be any provider
+  system: SYSTEM_PROMPT,
+  prompt: userPrompt,
+  maxOutputTokens: 1024,
+  temperature: 0.3,
+});
+```
+
+### Who charges me for API usage?
+
+**The LLM provider charges you directly -- not Vercel.**
+
+When you run TetrisBench locally (`npm run dev`), the request flow is:
+
+```
+Your browser
+    |
+    v
+localhost:3000 (your Next.js server, running on YOUR machine)
+    |
+    v
+LLM provider API (Google, Anthropic, OpenAI, or xAI)
+```
+
+Vercel (the company/platform) is not involved at all when running locally. The Vercel AI SDK is just an npm library, like any other dependency. No data passes through Vercel's servers.
+
+**Billing by provider:**
+
+| Provider | API Key Env Var | Billing Dashboard | Free Tier |
+|----------|----------------|-------------------|-----------|
+| Google (Gemini) | `GOOGLE_GENERATIVE_AI_API_KEY` | [aistudio.google.com](https://aistudio.google.com/) | Yes -- generous free tier for Gemini Flash |
+| Anthropic (Claude) | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com/) | Limited free credits |
+| OpenAI (GPT) | `OPENAI_API_KEY` | [platform.openai.com](https://platform.openai.com/) | Pay-as-you-go |
+| xAI (Grok) | `XAI_API_KEY` | xAI dashboard | Check current offering |
+
+### How much does it cost to play?
+
+Usage is minimal for casual play. The AI only calls the LLM during **interventions** (approximately every 20 moves, or when the board degrades). Each call sends a short prompt and requests at most 1024 output tokens.
+
+A typical 2-minute game triggers 3-6 interventions. With Gemini Flash, this is well within the free tier for most users.
+
+### Do I need a Vercel account?
+
+**No.** You do not need a Vercel account to run TetrisBench locally. A Vercel account is only needed if you want to deploy the app to Vercel's hosting platform. For local development and play, you only need API keys from the LLM providers you want to use.
+
+### What if I don't add any API keys?
+
+The AI will still play using the built-in `DEFAULT_SCORING_FN` (a hardcoded heuristic in `src/ai/executor.ts`). LLM intervention calls will fail silently and the AI continues playing with whatever scoring function it currently has. The game never blocks on a failed API call.
+
+---
+
+## 16. Glossary
 
 | Term | Definition |
 |------|-----------|
